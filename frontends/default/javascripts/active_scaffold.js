@@ -350,8 +350,6 @@ ActiveScaffold.ActionLink.Record.prototype = Object.extend(new ActiveScaffold.Ac
 
     this.adapter.down('a.inline-adapter-close').observe('click', this.close_handler.bind(this));
     this.register_cancel_hooks();
-
-    new Effect.Highlight(this.adapter.down('td'));
   },
 
   close_handler: function(event) {
@@ -419,8 +417,6 @@ ActiveScaffold.ActionLink.Table.prototype = Object.extend(new ActiveScaffold.Act
 
     this.adapter.down('a.inline-adapter-close').observe('click', this.close_handler.bind(this));
     this.register_cancel_hooks();
-
-    new Effect.Highlight(this.adapter.down('td'));
   },
 
   close_handler: function(event) {
