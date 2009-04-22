@@ -13,28 +13,27 @@ module ActiveScaffold::Actions
       respond_to do |type|
         type.html do
           if successful?
-            render(:action => 'update', :layout => true)
+            render(:action => 'update')
           else
             return_to_main
           end
         end
         type.js do
-          render(:partial => 'update_form', :layout => false)
+          render(:partial => 'update_form')
         end
       end
     end
 
     def update
       do_update
-
       respond_to do |type|
         type.html do
           if params[:iframe]=='true' # was this an iframe post ?
             responds_to_parent do
               if successful?
-                render :action => 'on_update', :layout => false
+                render :action => 'on_update.js'
               else
-                render :action => 'form_messages.rjs', :layout => false
+                render :action => 'form_messages_on_update.js'
               end
             end
           else # just a regular post
@@ -42,12 +41,12 @@ module ActiveScaffold::Actions
               flash[:info] = as_(:updated_model, :model => @record.to_label)
               return_to_main
             else
-              render(:action => 'update', :layout => true)
+              render(:action => 'update')
             end
           end
         end
         type.js do
-          render :action => 'on_update', :layout => false
+          render :action => 'on_update'
         end
         type.xml { render :xml => response_object.to_xml, :content_type => Mime::XML, :status => response_status }
         type.json { render :text => response_object.to_json, :content_type => Mime::JSON, :status => response_status }
@@ -58,7 +57,7 @@ module ActiveScaffold::Actions
     # for inline (inlist) editing
     def update_column
       do_update_column
-      render :action => 'update_column.rjs', :layout => false
+      render :action => 'update_column'
     end
 
     protected
@@ -72,7 +71,7 @@ module ActiveScaffold::Actions
     # A complex method to update a record. The complexity comes from the support for subforms, and saving associated records.
     # If you want to customize this algorithm, consider using the +before_update_save+ callback
     def do_update
-      @record = find_if_allowed(params[:id], :update)
+      do_edit
       begin
         active_scaffold_config.model.transaction do
           @record = update_record_from_params(@record, active_scaffold_config.update.columns, params[:record])
@@ -91,7 +90,7 @@ module ActiveScaffold::Actions
     end
 
     def do_update_column
-      @record = find_if_allowed(params[:id], :update)
+      do_edit
       if @record.authorized_for?(:action => :update, :column => params[:column])
         params[:value] ||= @record.column_for_attribute(params[:column]).default unless @record.column_for_attribute(params[:column]).null
         @record.send("#{params[:column]}=", params[:value])
